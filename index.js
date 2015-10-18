@@ -1,3 +1,4 @@
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -41,7 +42,9 @@ var initOSC = function() {
 
       if(msg.address === heartbeat) {
         console.log("An /heartbeat message just arrived!", msg);
-        io.sockets.emit('heartbeat', msg);
+        var sensorTmpl = jade.compile(fs.FileSync("./server/views/sensor.jade"));
+        var html = sensorTmpl(msg);
+        io.sockets.emit('heartbeat', { sensor: html } );
       }
   });
   udpPort.open();
