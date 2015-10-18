@@ -1,9 +1,17 @@
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var jade = require('jade');
+var io = require('socket.io')(http);
 var osc = require('osc');
-var Netmask = require('netmask').Netmask
 var os = require('os');
-var netmask = require('my-local-netmask')();
+var Netmask = require('netmask').Netmask
+var networkMask = require('my-local-netmask')();
 var networkIP = require('my-local-ip')();
 'use strict';
+
+
+// utils
 
 function dec2bin(dec) {
   return (dec >>> 0).toString(2);
@@ -17,18 +25,48 @@ function cidrFromMask(mask) {
   };
   return cidr;
 }
-var heartbeat = "/heartbeat";
-var broadcast = new Netmask(networkIP + '/' + cidrFromMask(netmask)).broadcast;
 
-var udpPort = new osc.UDPPort({
-  localAddress: "0.0.0.0",
-  localPort: 7400
+
+// osc server
+
+var initOSC = function() {
+  var heartbeat = "/heartbeat";
+  var broadcast = new Netmask(networkIP + '/' + cidrFromMask(networkMask)).broadcast;
+
+  var udpPort = new osc.UDPPort({
+    localAddress: "0.0.0.0",
+    localPort: 7400
+  });
+  udpPort.on('message', function (msg) {
+
+      if(msg.address === heartbeat) {
+        console.log("An /heartbeat message just arrived!", msg);
+        io.sockets.emit('heartbeat', msg);
+      }
+  });
+  udpPort.open();
+}
+
+// webserver
+
+app.use(express.static('public'));
+app.set('views', __dirname + '/server/views');
+app.set('view engine', 'jade');
+
+app.get('/', function(req, res){
+
+  res.render('layout', {});
 });
-udpPort.on('message', function (msg) {
-    if(msg.address === heartbeat) {
-      console.log("An OSC message just arrived!", msg);
-    }
+
+var oscServer = io.listen(http);
+
+oscServer.on('connection', function(socket){
+
+  console.log('a user connected');
+  initOSC();
 });
-udpPort.open();
 
+app.listen(3000, function(){
 
+  console.log('listening on *:3000');
+});
