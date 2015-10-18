@@ -1,0 +1,21 @@
+{
+  "name": "ubungsraum-osc-web-client",
+  "version": "1.0.0",
+  "description": "a web client for monitoring and controlling ubungsraum server via OSC messages",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "m. howell",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.3",
+    "my-local-netmask": "^1.0.0",
+    "netmask": "^1.0.5",
+    "node-osc": "^1.1.0",
+    "osc": "^1.4.0"
+  },
+  "devDependencies": {
+    "browserify": "^11.2.0"
+  }
+}
