@@ -1,5 +1,8 @@
-div(class="sensor")
-  p ip
+div(class="sensor" id="#{ip}")
+  p ip:
     span #{ip}
-  p params
+  p params:
     span #{params}
+  label(for="#{ip}") startDepth
+  input(name="#{ip}")
+  button(name="#{ip}") Send

@@ -12,13 +12,21 @@ var networkIP = require('my-local-ip')();
 'use strict';
 
 
+// vars
+var oscServer; // osc server instance 
+var sensors = {};
+var sensorTTLTimeoutId;
+
+
 // utils
 
 function dec2bin(dec) {
+
   return (dec >>> 0).toString(2);
 }
 
 function cidrFromMask(mask) {
+
   var cidr = 0;
   var parts = mask.split('.');
   for (var i = 0; i < parts.length; i++) {
@@ -27,28 +35,85 @@ function cidrFromMask(mask) {
   return cidr;
 }
 
+function addSensor(msg) {
 
+  var dirty = false;
+  if(typeof sensors[msg.args[0]] !== 'string') {
+    dirty = true;
+    var lastUpdated = new Date();
+    sensor = {
+      address: msg.args[0],
+      ttl: lastUpdated
+    }
+    sensors[msg.args[0]] = sensor;
+  }
+  if(dirty) {
+    renderSensors();
+  }
+}
+
+function buildSensorTemplates() {
+
+  var sensorTmpl = jade.compile(fs.readFileSync("server/views/sensor.jade"));
+  var markups = [];
+  for (var key in sensors) {
+    markups.push(sensorTmpl({ip:sensors[key].address, params: ""}));
+  }
+  return markups;
+}
+
+function renderSensors() {
+
+  var sensorMarkups = buildSensorTemplates();
+  io.emit('heartbeat', { markups: sensorMarkups, sensorData: sensorMarkups });
+}
 // osc server
+// . . |. . . . ; . then + 7s continues forward as hartbeats are updated -->
+// . .  . . . . . . now
 
 var initOSC = function() {
+
   var heartbeat = "/heartbeat";
   var broadcast = new Netmask(networkIP + '/' + cidrFromMask(networkMask)).broadcast;
 
-  var udpPort = new osc.UDPPort({
+  sensorTTLTimeoutId = setInterval(function() {
+
+    var dirty = false;
+    for (var key in sensors) {
+      if((sensors[key].ttl.getSeconds() + 7) - new Date().getSeconds() <= 0) {
+        delete sensors[key];
+        dirty = true;
+      }
+    }
+    if(dirty) {
+      renderSensors();
+    }
+
+  }, 500);
+
+  oscServer = new osc.UDPPort({
     localAddress: "0.0.0.0",
     localPort: 7400
   });
-  udpPort.on('message', function (msg) {
+
+  console.log('osc server initalized');
+  console.log(oscServer);
+
+  oscServer.on('message', function (msg) {
 
       if(msg.address === heartbeat) {
-        console.log("An /heartbeat message just arrived!", msg);
-        var sensorTmpl = jade.compile(fs.FileSync("./server/views/sensor.jade"));
-        var html = sensorTmpl(msg);
-        io.sockets.emit('heartbeat', { sensor: html } );
+        addSensor(msg);
+        // console.log("receieved a /heartbeat message", msg);
       }
   });
-  udpPort.open();
-}
+
+  oscServer.open();
+};
+
+var tearDownOSC = function() {
+    sensors = [];
+    oscServer.close();
+};
 
 // webserver
 
@@ -58,18 +123,21 @@ app.set('view engine', 'jade');
 
 app.get('/', function(req, res){
 
-  res.render('layout', {});
+  res.render('index', {});
 });
 
-var oscServer = io.listen(http);
+io.on('connection', function(socket){
 
-oscServer.on('connection', function(socket){
-
-  console.log('a user connected');
+  console.log('user connected');
   initOSC();
+  socket.on('disconnect', function(){
+    console.log('user disconnected.');
+    tearDownOSC();
+    console.log('OSC closed at ' + oscServer.localAddress + ':' + oscServer.localPort);
+  });
 });
 
-app.listen(3000, function(){
+http.listen(3000, function(){
 
   console.log('listening on *:3000');
 });

@@ -1,13 +1,25 @@
 var socket = io.connect("http://localhost:3000");
-socket.on('heartbeat', function(msg) {
-  console.log(msg);
-  createHeartbeatView(msg);
+var sensorData = {};
+
+socket.on('heartbeat', function(data) {
+
+  // console.log(data);
+  sensorData = data.sensorData;
+  createSensorView(data.markups);
+  tuneIn2Broadcast();
+
 });
 
-function createSensorView(data) {
-   var frag = document.createDocumentFragment();
-   sensor = frag.appendChild(document.createElement("div"));
-   sensor.innerHTML = data.sensor.html;
-   var sensorsContainers = document.getElementById("sensors");
-   sensorsContainers.prependChild(sensor);
+function sendControlMsg(e) {
+  
+}
+
+function createSensorView(markup) {
+
+  var sensorsContainer = document.getElementById("sensors");
+  sensorsContainer.innerHTML = markup;
+}
+
+function tuneIn2Broadcast(sensorData) {
+
 }
