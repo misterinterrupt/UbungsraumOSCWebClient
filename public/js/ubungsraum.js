@@ -5,10 +5,18 @@ socket.on('heartbeat', function(data) {
 
   // console.log(data);
   sensorData = data.sensorData;
-  createSensorView(data.markups);
+  if(data.markups !== null) {
+    createSensorView(data.markups);
+    bindCommands(data);
+  }
+
   tuneIn2Broadcast();
 
 });
+
+function bindCommands() {
+  
+}
 
 function sendControlMsg(e) {
   

@@ -38,17 +38,24 @@ function cidrFromMask(mask) {
 function addSensor(msg) {
 
   var dirty = false;
-  if(typeof sensors[msg.args[0]] !== 'string') {
+  var ip = msg.args[0].slice(1, -1);
+  if(typeof sensors[ip] === 'undefined') {
+    // ip is not in sensors
     dirty = true;
-    var lastUpdated = new Date();
-    sensor = {
-      address: msg.args[0],
-      ttl: lastUpdated
-    }
-    sensors[msg.args[0]] = sensor;
   }
+  var lastUpdated = new Date();
+  sensor = {
+    address: ip,
+    ttl: lastUpdated
+  }
+  sensors[ip] = sensor;
   if(dirty) {
-    renderSensors();
+    // console.log(ip + ' added');
+    var sensorMarkups = buildSensorTemplates();
+    io.emit('heartbeat', { markups: sensorMarkups, sensorData: sensors });
+  } else {
+    // console.log(ip + ' updated');
+    io.emit('heartbeat', { markups: null, sensorData: sensors });
   }
 }
 
@@ -57,16 +64,15 @@ function buildSensorTemplates() {
   var sensorTmpl = jade.compile(fs.readFileSync("server/views/sensor.jade"));
   var markups = [];
   for (var key in sensors) {
-    markups.push(sensorTmpl({ip:sensors[key].address, params: ""}));
+    var data = {
+      ip: sensors[key].address,
+      params: ""
+    }
+    markups.push(sensorTmpl({ip:data.ip, params: data.params}));
   }
   return markups;
 }
 
-function renderSensors() {
-
-  var sensorMarkups = buildSensorTemplates();
-  io.emit('heartbeat', { markups: sensorMarkups, sensorData: sensorMarkups });
-}
 // osc server
 // . . |. . . . ; . then + 7s continues forward as hartbeats are updated -->
 // . .  . . . . . . now
