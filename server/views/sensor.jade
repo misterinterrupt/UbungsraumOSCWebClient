@@ -6,17 +6,16 @@ div(class="sensor spacestyle cornerstyle textStyle" id="#{ip}")
   p params:
     span #{params} 
 
-  form(action="")
-    div(class='param')
-      input(type="number" name="minDepth" min="1" max="500" value="#{minDepth}")
-      label(for="minDepth") Min Depth
-    div(class='param')
-      input(type="number" name="maxDepth" min="1" max="500" value="#{maxDepth}")
-      label(for="maxDepth") Max Depth
-    div(class='param')
-      input(type="number" name="minArea" min="1" max="50000" value="#{minArea}")
-      label(for="minArea") Min Area
-    div(class='param')
-      input(type="number" name="blobDelta" min="1" max="100" value="#{blobDelta}")
-      label(for="blobDelta") Bob Delta
-    button(name="paramSubmit-#{ip}") Send
+  div(class='param')
+    input(type="number" name="minDepth" min="1" max="500" value="#{minDepth}")
+    label(for="minDepth") Min Depth
+  div(class='param')
+    input(type="number" name="maxDepth" min="1" max="500" value="#{maxDepth}")
+    label(for="maxDepth") Max Depth
+  div(class='param')
+    input(type="number" name="minArea" min="1" max="50000" value="#{minArea}")
+    label(for="minArea") Min Area
+  div(class='param')
+    input(type="number" name="blobDelta" min="1" max="100" value="#{blobDelta}")
+    label(for="blobDelta") Bob Delta
+  button(id="paramSubmit") Send

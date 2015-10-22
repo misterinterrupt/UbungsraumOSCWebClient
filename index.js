@@ -78,6 +78,10 @@ function buildSensorTemplates() {
   return markups;
 }
 
+function sendRemoteCommand(params) {
+  console.log(params);
+}
+
 // osc server
 // . . |. . . . ; . then + 7s continues forward as hartbeats are updated -->
 // . .  . . . . . . now
@@ -147,6 +151,8 @@ io.on('connection', function(socket){
     console.log('OSC closed at ' + oscServer.localAddress + ':' + oscServer.localPort);
   });
 });
+
+io.on('sensorConfigCommand', sendRemoteCommand);
 
 http.listen(3000, function(){
 
