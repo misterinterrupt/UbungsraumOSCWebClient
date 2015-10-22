@@ -156,9 +156,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 39.0, 139.0, 221.0, 23.0 ],
+					"patching_rect" : [ 39.0, 139.0, 243.0, 23.0 ],
 					"style" : "",
-					"text" : "/heartbeat 192.168.1. 30 40 190 200"
+					"text" : "/heartbeat 192.168.1.144 40 190 200 30"
 				}
 
 			}

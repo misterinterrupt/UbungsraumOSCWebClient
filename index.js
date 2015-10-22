@@ -85,27 +85,31 @@ function sendRemoteCommand(params) {
     if(key === 'ip') {
       ip = params[key];
     } else {
-      msgArgs.push(parseInt(params[key]));
+      msgArgs.push({
+        type:'i',
+        value: parseInt(params[key])
+      });
     }
   }
   if(!sensors[ip]) {
     return;
   }
   
-  oscPort = new osc.UDPPort({
-    localAddress: networkIP,
-    remoteAddress: ip,
-    remotePort: oscClientPort
-  });
+  // oscPort = new osc.UDPPort({
+  //   localAddress: networkIP,
+  //   remoteAddress: ip,
+  //   remotePort: oscClientPort
+  // });
 
-  oscPort.open();
+  // oscPort.open();
   msg = {
     address: '/config',
     args: msgArgs
   };
-  console.log(msgArgs);
-  oscPort.send(msg);
-  oscPort.close();
+  // console.log(msgArgs);
+  // oscPort.send(msg);
+  // oscPort.close();
+  oscServer.send(msg, ip, oscClientPort);
   sensors[ip].changed = true;
 }
 
