@@ -38,7 +38,8 @@ function cidrFromMask(mask) {
 function addSensor(msg) {
 
   var dirty = false;
-  var ip = msg.args[0].slice(1, -1);
+  var params = Array.prototype.slice.call(msg, 1);
+  var ip = msg.args[0];
   if(typeof sensors[ip] === 'undefined') {
     // ip is not in sensors
     dirty = true;
@@ -46,6 +47,10 @@ function addSensor(msg) {
   var lastUpdated = new Date();
   sensor = {
     address: ip,
+    minDepth: params[0],
+    maxDepth: params[1],
+    minArea: params[2],
+    blobDelta: params[3],
     ttl: lastUpdated
   }
   sensors[ip] = sensor;

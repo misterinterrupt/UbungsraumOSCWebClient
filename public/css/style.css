@@ -1,0 +1,60 @@
+body {
+  background-color: black;
+  color: white;
+}
+#container {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+#main-content {
+  border-top: 1px solid green;
+}
+#sensors {
+  position: relative;
+}
+.sensor {
+  width: 13.4rem;
+  float: left;
+  background-color: darkslategray;
+}
+#sensors:after {
+  clear: both;
+  content: "";
+  display: block;
+}
+#param-info {
+  background-color: #333;
+}
+#param-info p {
+  font-size: 0.94rem;
+  margin: 0.2rem;
+}
+#param-info p span {
+  font-size: 1.0rem;
+  color: #ccc;
+}
+.param {
+}
+
+.param input[type=number] {
+  width: 3rem;
+  color: #fff;
+  border: none;
+  background-color: #333;
+}
+.param label {
+  margin-left: 1rem;
+}
+.spacestyle {
+  padding: 0.4rem;
+  margin: 0.4rem;
+}
+
+.textStyle {
+  color: deepskyblue;
+}
+.cornerstyle {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}

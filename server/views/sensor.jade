@@ -1,15 +1,22 @@
-div(class="sensor" id="#{ip}")
+div(class="sensor spacestyle cornerstyle textStyle" id="#{ip}")
+
   p ip:
-    span #{ip}
+    span #{ip} 
+  
   p params:
-    span #{params}
+    span #{params} 
+
   form(action="")
-    label(for="minDepth") Minimum Depth (How far from the Kinect you have to be for detection)
-    input(type="number" name="minDepth" min="1" max="500" value="#{minDepth}")
-    label(for="maxDepth") Maximum Depth (How far from the min depth you can get and still be detected)
-    input(type="number" name="maxDepth" min="1" max="500" value="#{maxDepth}")
-    label(for="minArea") Minimum Area (The minimum size an object can be and still be detected)
-    input(type="number" name="minArea" min="1" max="50000" value="#{minArea}")
-    label(for="blobDelta") Bob Delta (The closest two Bobs can get before they merge into one Bob)
-    input(type="number" name="blobDelta" min="1" max="100" value="#{blobDelta}")
-    button(name="paramSubmit") Send
+    div(class='param')
+      input(type="number" name="minDepth" min="1" max="500" value="#{minDepth}")
+      label(for="minDepth") Min Depth
+    div(class='param')
+      input(type="number" name="maxDepth" min="1" max="500" value="#{maxDepth}")
+      label(for="maxDepth") Max Depth
+    div(class='param')
+      input(type="number" name="minArea" min="1" max="50000" value="#{minArea}")
+      label(for="minArea") Min Area
+    div(class='param')
+      input(type="number" name="blobDelta" min="1" max="100" value="#{blobDelta}")
+      label(for="blobDelta") Bob Delta
+    button(name="paramSubmit-#{ip}") Send

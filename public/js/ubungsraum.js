@@ -15,7 +15,7 @@ socket.on('heartbeat', function(data) {
 });
 
 function bindCommands() {
-  
+  var sensors = 
 }
 
 function sendControlMsg(e) {
@@ -25,7 +25,7 @@ function sendControlMsg(e) {
 function createSensorView(markup) {
 
   var sensorsContainer = document.getElementById("sensors");
-  sensorsContainer.innerHTML = markup;
+  sensorsContainer.innerHTML = markup.join('');
 }
 
 function tuneIn2Broadcast(sensorData) {

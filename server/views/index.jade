@@ -1,5 +1,12 @@
 extend layout
 block content
+  div(id="param-info" class="spacestyle cornerstyle textStyle")
+    p #[span Minimum Depth] - How far from the Kinect you have to be for detection
+    p #[span Maximum Depth] - How far from the min depth you can get and still be detected
+    p #[span Minimum Area] - The minimum size an object can be and still be detected
+    p #[span Bob Delta] - The closest two Bobs can get before they merge into one Bob
+  h2 Connected Sensors
+  button(name="paramSubmit") Send All
   div(id="sensors")
     
 block sidebar
