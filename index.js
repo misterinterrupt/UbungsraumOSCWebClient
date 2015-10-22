@@ -16,7 +16,9 @@ var networkIP = require('my-local-ip')();
 var oscServer; // osc server instance 
 var sensors = {};
 var sensorTTLTimeoutId;
-
+var oscServerAddress = '0.0.0.0';
+var oscServerPort = 7400;
+var oscClientPort = 7401;
 
 // utils
 
@@ -38,7 +40,7 @@ function cidrFromMask(mask) {
 function addSensor(msg) {
 
   var dirty = false;
-  var params = Array.prototype.slice.call(msg, 1);
+  var params = Array.prototype.slice.call(msg.args, 1);
   var ip = msg.args[0];
   if(typeof sensors[ip] === 'undefined') {
     // ip is not in sensors
@@ -46,7 +48,7 @@ function addSensor(msg) {
   }
   var lastUpdated = new Date();
   sensor = {
-    address: ip,
+    ip: ip,
     minDepth: params[0],
     maxDepth: params[1],
     minArea: params[2],
@@ -69,17 +71,31 @@ function buildSensorTemplates() {
   var sensorTmpl = jade.compile(fs.readFileSync("server/views/sensor.jade"));
   var markups = [];
   for (var key in sensors) {
-    var data = {
-      ip: sensors[key].address,
-      params: ""
-    }
-    markups.push(sensorTmpl({ip:data.ip, params: data.params}));
+    markups.push(sensorTmpl(sensors[key]));
   }
   return markups;
 }
 
 function sendRemoteCommand(params) {
-  console.log(params);
+
+  var msgArgs = [];
+  var ip;
+  for (var key in params) {
+    if(key === 'ip') {
+      ip = params[key];
+    }
+    msgArgs.push(params[key]);
+  }
+  var oscPort = new osc.UDPPort({
+    localAddress: ip,
+    localPort: oscClientPort
+  });
+  oscPort.open();
+  oscPort.send({
+    address: '/config',
+    args: msgArgs.join(' ')
+  });
+  oscPort.close();
 }
 
 // osc server
@@ -107,12 +123,12 @@ var initOSC = function() {
   }, 500);
 
   oscServer = new osc.UDPPort({
-    localAddress: "0.0.0.0",
-    localPort: 7400
+    localAddress: oscServerAddress,
+    localPort: oscServerPort
   });
 
-  console.log('osc server initalized');
-  console.log(oscServer);
+  console.log('osc server listening at ' + oscServerAddress + ':' + oscServerPort);
+  // console.log(oscServer);
 
   oscServer.on('message', function (msg) {
 
@@ -150,11 +166,11 @@ io.on('connection', function(socket){
     tearDownOSC();
     console.log('OSC closed at ' + oscServer.localAddress + ':' + oscServer.localPort);
   });
+  socket.on('sensorConfigCommand', sendRemoteCommand);
 });
 
-io.on('sensorConfigCommand', sendRemoteCommand);
 
-http.listen(3000, function(){
+http.listen(1337, function(){
 
-  console.log('listening on *:3000');
+  console.log('express listening for http on local:1337');
 });

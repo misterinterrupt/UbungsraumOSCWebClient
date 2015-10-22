@@ -1,4 +1,5 @@
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://localhost:1337");
+console.log('connected to http://localhost:1337');
 var sensorData = {};
 
 
@@ -18,11 +19,12 @@ function bindCommands() {
   var sensors = document.querySelectorAll('.sensor');
   var sendAllBtn = document.getElementById('sendAllBtn');
 
+  sendAllBtn.removeEventListener('click', sendAllControlMsgs);
   sendAllBtn.addEventListener('click', sendAllControlMsgs);
 
   for (var i = 0; i < sensors.length; i++) {
     var sensor = sensors[i].querySelector('button');
-    console.log('binding', sensor);
+    // console.log('binding', sensor);
     sensor.addEventListener('click', function(e) {
       // sendControlMsg(e.target.parentNode);
       sendControlMsg(e.target.closest('.sensor'));
@@ -41,12 +43,12 @@ function sendAllControlMsgs() {
 function sendControlMsg(sensorNode) {
 
 
-  console.log('clicked ' + sensorNode.id);
+  // console.log('clicked ' + sensorNode.id);
   var ip = sensorNode.id;
-  var minDepth = sensorNode.querySelector('minDepth');
-  var maxDepth = sensorNode.querySelector('maxDepth');
-  var minArea = sensorNode.querySelector('minArea');
-  var blobDelta = sensorNode.querySelector('blobDelta');
+  var minDepth = sensorNode.querySelector('input[name="minDepth"]').value;
+  var maxDepth = sensorNode.querySelector('input[name="maxDepth"]').value;
+  var minArea = sensorNode.querySelector('input[name="minArea"]').value;
+  var blobDelta = sensorNode.querySelector('input[name="blobDelta"]').value;
   var params = {
     ip       : ip, 
     minDepth : minDepth, 
@@ -54,6 +56,7 @@ function sendControlMsg(sensorNode) {
     minArea  : minArea,
     blobDelta: blobDelta
   };
+  console.log(params);
   socket.emit('sensorConfigCommand', params);
 }
 

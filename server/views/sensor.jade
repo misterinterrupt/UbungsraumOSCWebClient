@@ -7,15 +7,15 @@ div(class="sensor spacestyle cornerstyle textStyle" id="#{ip}")
     span #{params} 
 
   div(class='param')
-    input(type="number" name="minDepth" min="1" max="500" value="#{minDepth}")
+    input(type="number" name="minDepth" min="1" max="500" value='#{minDepth}')
     label(for="minDepth") Min Depth
   div(class='param')
-    input(type="number" name="maxDepth" min="1" max="500" value="#{maxDepth}")
+    input(type="number" name="maxDepth" min="1" max="500" value='#{maxDepth}')
     label(for="maxDepth") Max Depth
   div(class='param')
-    input(type="number" name="minArea" min="1" max="50000" value="#{minArea}")
+    input(type="number" name="minArea" min="1" max="50000" value='#{minArea}')
     label(for="minArea") Min Area
   div(class='param')
-    input(type="number" name="blobDelta" min="1" max="100" value="#{blobDelta}")
+    input(type="number" name="blobDelta" min="1" max="100" value='#{blobDelta}')
     label(for="blobDelta") Bob Delta
   button(id="paramSubmit") Send
