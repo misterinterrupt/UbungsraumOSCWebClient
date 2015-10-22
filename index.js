@@ -39,12 +39,12 @@ function cidrFromMask(mask) {
 
 function addSensor(msg) {
 
-  var dirty = false;
+  var changed = false;
   var params = Array.prototype.slice.call(msg.args, 1);
   var ip = msg.args[0];
   if(typeof sensors[ip] === 'undefined') {
     // ip is not in sensors
-    dirty = true;
+    changed = true;
   }
   var lastUpdated = new Date();
   sensor = {
@@ -56,7 +56,7 @@ function addSensor(msg) {
     ttl: lastUpdated
   }
   sensors[ip] = sensor;
-  if(dirty) {
+  if(changed) {
     // console.log(ip + ' added');
     var sensorMarkups = buildSensorTemplates();
     io.emit('heartbeat', { markups: sensorMarkups, sensorData: sensors });
@@ -79,23 +79,27 @@ function buildSensorTemplates() {
 function sendRemoteCommand(params) {
 
   var msgArgs = [];
-  var ip;
+  var oscPort, ip, msg;
+  
   for (var key in params) {
     if(key === 'ip') {
       ip = params[key];
     }
     msgArgs.push(params[key]);
   }
-  var oscPort = new osc.UDPPort({
+  oscPort = new osc.UDPPort({
     localAddress: ip,
     localPort: oscClientPort
   });
-  oscPort.open();
-  oscPort.send({
+  msg = {
     address: '/config',
     args: msgArgs.join(' ')
-  });
+  };
+  console.log(msg);
+  oscPort.open();
+  oscPort.send(msg);
   oscPort.close();
+  sensors[ip].changed = true;
 }
 
 // osc server
@@ -109,15 +113,16 @@ var initOSC = function() {
 
   sensorTTLTimeoutId = setInterval(function() {
 
-    var dirty = false;
+    var changed = false;
     for (var key in sensors) {
-      if((sensors[key].ttl.getSeconds() + 7) - new Date().getSeconds() <= 0) {
+      if( ((sensors[key].ttl.getSeconds() + 7) - new Date().getSeconds() <= 0)
+        || (sensors[key].changed === true)) {
         delete sensors[key];
-        dirty = true;
+        changed = true;
       }
     }
-    if(dirty) {
-      renderSensors();
+    if(changed) {
+      io.emit('heartbeat', { markups: null, sensorData: sensors });
     }
 
   }, 500);
@@ -134,7 +139,7 @@ var initOSC = function() {
 
       if(msg.address === heartbeat) {
         addSensor(msg);
-        // console.log("receieved a /heartbeat message", msg);
+        console.log("receieved a /heartbeat message", msg);
       }
   });
 

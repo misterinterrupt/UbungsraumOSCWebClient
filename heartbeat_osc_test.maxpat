@@ -71,7 +71,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 304.0, 313.0, 243.0, 23.0 ],
-					"presentation_rect" : [ 304.0, 313.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "/heartbeat 192.168.1.144 30 40 190 200"
 				}
@@ -87,7 +86,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 304.0, 258.0, 243.0, 23.0 ],
-					"presentation_rect" : [ 304.0, 258.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "/heartbeat 192.168.1.124 30 40 190 200"
 				}
@@ -103,7 +101,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 287.0, 206.0, 242.0, 23.0 ],
-					"presentation_rect" : [ 390.0, 139.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "/heartbeat 192.168.1.114 30 40 190 200"
 				}
@@ -119,7 +116,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 203.0, 172.0, 242.0, 23.0 ],
-					"presentation_rect" : [ 211.0, 138.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "/heartbeat 192.168.1.115 30 40 190 200"
 				}
