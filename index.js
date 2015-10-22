@@ -84,19 +84,26 @@ function sendRemoteCommand(params) {
   for (var key in params) {
     if(key === 'ip') {
       ip = params[key];
+    } else {
+      msgArgs.push(parseInt(params[key]));
     }
-    msgArgs.push(params[key]);
   }
+  if(!sensors[ip]) {
+    return;
+  }
+  
   oscPort = new osc.UDPPort({
-    localAddress: ip,
-    localPort: oscClientPort
+    localAddress: networkIP,
+    remoteAddress: ip,
+    remotePort: oscClientPort
   });
+
+  oscPort.open();
   msg = {
     address: '/config',
-    args: msgArgs.join(' ')
+    args: msgArgs
   };
-  console.log(msg);
-  oscPort.open();
+  console.log(msgArgs);
   oscPort.send(msg);
   oscPort.close();
   sensors[ip].changed = true;
@@ -139,7 +146,7 @@ var initOSC = function() {
 
       if(msg.address === heartbeat) {
         addSensor(msg);
-        console.log("receieved a /heartbeat message", msg);
+        // console.log("receieved a /heartbeat message", msg);
       }
   });
 
